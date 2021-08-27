@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no, user-scalable=no">
+        <link rel="stylesheet" href="../../css/home/base.css" type="text/css">
+        <script type="text/javascript" src="../../js/home/lib/jquery-1.12.4.min.js"></script>
+        <script type="text/javascript" src="../../js/home/common.js"></script>
+        <script type="text/javascript" src="../../js/home/common.cyber.js"></script>
+        <script type="text/javascript">
+            /*
+                pageInfo : 화면 정보
+                id: string, 화면 ID
+                title: string, 모바일 action bar 제목
+                prev : boolean, 이전 화살표 유무
+                menu : boolean, 메뉴 버튼 유무
+                category : string, 카테고리
+            */
+            // 2020.06.11 수정 - category 항목 추가
+            // 2020.07.06 수정 - category 값 수정
+            // 2020.09.01 수정 - menu 값 true로 수정
+            pageInfo = { id: 'MO-CM-990200-000000', title: '로그인', prev: true, menu: true, category: 'login' };
+
+            $(function() {
+                setupTab({ id: 'loginTab' });
+
+                // 2020.07.21 로그인 설정 버튼 추가
+                var tabNowIdx = $('.tab-wrap').find('.now').index();
+                var settingBtn = $('<button type="button" class="btn-setting"><span>설정</span></button>');
+                var gnbBtnEvent = function(_tabIdx) {
+                    if (_tabIdx === 0) {
+                        settingBtn.appendTo('.gnb-wrap');
+                        // 로그인 설정 modal 띄우기
+                        $('.gnb').find('.btn-setting').on('click', function() {
+                            modalUI.run('MO-CM-990200-010200p');
+                        });
+                    } else {
+                        settingBtn.remove();
+                    }
+                };
+                gnbBtnEvent(tabNowIdx);
+                
+                // 2020.07.21 개인회원/기업회원 tab 클릭 시 로그인 설정 버튼 추가/삭제
+                $('.tab-wrap').find('.btn-tab').on('click', function() {
+                    tabNowIdx = $(this).index();
+                    gnbBtnEvent(tabNowIdx);
+                });
+
+                if (isMobileChk) {
+                    $plugins.uiFloating({ id: 'loginTab_float', ps: 'top', add: 'commHeader', fix: false });
+                }
+
+                // 2020.06.04 추가 - accordion plugin
+                $plugins.uiAccordion({
+                    id: 'loginInfo',
+                    current: null
+                });
+                
+                // 2020.09.13 앱설치안내 팝업 띄우기
+                if (isMobileChk) {
+                    modalUI.run('MO-CM-993011-000000p');
+                }
+            });
+
+            // 2020.06.04 추가 - modal
+            modalUI.setPages([
+                { id: 'simpleRegInfo', page: 'MO-CM-990200-020100p', ps: 'bottom', mpage: false, size: 'small' },      // 간편비밀번호 이용안내
+                { id: 'simplePassword', page: 'MO-CM-990200-020000p', ps: 'center', mpage: true, size: 'small' },                     // 간편비밀번호 입력
+                { id: 'kakaoPay', page: 'MO-CM-990200-030000p', ps: 'center', mpage: true, size: 'small' },            // 카카오페이
+                { id: 'bioInfo', page: 'MO-CM-990800-040000p', ps: 'bottom', mpage: false, size: 'small' },            // 바이오인증 이용안내
+                // 2020.07.21 휴대폰인증 팝업 추가
+                { id: 'mobileConf', page: 'MO-CM-990200-040000p', ps: 'center', mpage: true },                         // 휴대폰인증
+                { id: 'groupCorp', page: 'MO-CM-990201-010000p', ps: 'bottom', mpage: false, size: 'small' },          // 단체보험-법인
+                { id: 'groupPerson', page: 'MO-CM-990201-020000p', ps: 'bottom', mpage: false, size: 'small' },        // 단체보험-피보험자
+                { id: 'pensionCompany', page: 'MO-CM-990201-030000p', ps: 'bottom', mpage: false, size: 'small' },     // 퇴직연금-기업
+                // 2020.07.21 로그인 설정 팝업 추가
+                { id: 'settingLogin', page: 'MO-CM-990200-010200p', ps: 'bottom', mpage: false, size: 'small' },        // 로그인 설정
+                // 2020.09.13 앱설치안내 팝업 추가
+                { id: 'setupInfo', page: 'MO-CM-993011-000000p', ps: 'center', mpage: false }    // 앱설치안내 팝업
+            ]);
+
+            // 2020.06.04 추가 - 간편비밀번호
+            function simplePasword() {
+                // 간편비밀번호 등록 전
+                // modalUI.run('MO-CM-990200-020100p');
+
+                // 간편비밀번호 등록 후
+                modalUI.run('MO-CM-990200-020000p');
+            }
+
+            // 2020.06.04 추가 - // 바이오인증
+            function confBio() {
+                // 앱설치 안된 경우 alert
+                // $plugins.modal.system({
+                //     type: 'alert',
+                //     btn_alert: '확인',
+                //     cont_text: '앱을 먼저 설치한 후에<br>바이오인증 로그인을 해 주세요.',
+                //     confirmCallback: function() {
+                //         // 스토어로 이동하는 flow
+                //         // console.log('alert 확인');
+                //     }
+                // });
+
+                // 바이오 인증 미등록인 경우
+                modalUI.run('MO-CM-990800-040000p');
+            }
+        </script>
+    </head>
+    <body>
+        <div class="base-layer" id="baseLayer"></div>
+        <div class="wrap commPage">
+            <!-- header -->
+            <header id="commHeader" class="gnb"></header>
+
+            <!-- main content -->
+            <!-- 2020.08.15 class값 login 삭제 -->
+            <main id="mainCont" class="main-wrap">
+                <!-- 2020.07.21 제목 및 안내 문구 추가 -->
+                <div class="main-page">
+                    <div class="title-wrap">
+                        <!-- 2020.08.14 문구 변경 -->
+                        <h1 class="h1">
+                            <strong>인증방식</strong>을 선택해 주세요
+                        </h1>
+                        <!-- 2020.08.14 class값 fc-black 추가 -->
+                        <p class="tit-sub fc-black">
+                            <!-- 2020.08.14 문구에 대한 HTML 수정 -->
+                            <span class="pc-br">로그인 서비스는 <em class="fc-primary">미래에셋생명 고객</em> 대상으로 제공됩니다.</span>
+                            별도의 회원가입 없이 아래 인증방식을 선택하여 간편하게 로그인 하세요.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 2020.07.21 class값 mgt4 추가 -->
+                <div id="loginTab" class="tab-wrap mgt4">
+                    <div id="loginTab_float" class="ui-floating">
+                        <div class="tab-btns-wrap ui-floating-wrap">
+                            <div class="tab-inner">
+                                <button type="button" class="btn-tab">
+                                    <span>개인회원</span>
+                                </button>
+                                <button type="button" class="btn-tab">
+                                    <span>기업회원</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 2020.07.21 class 값 mgt-n 삭제 -->
+                    <div class="tab-cont-wrap">
+                        <!-- 2020.06.04 추가 - 개인회원 tab 내용 -->
+                        <div class="tab-cont">
+                            <div class="main-page pdt-n">
+                                <!-- 2020.07.06 수정 - 메뉴별 아이콘 적용 -->
+                                <!-- 2020.08.17 class값 odd 추가 -->
+                                <div class="link-list type-icon odd">
+                                    <div class="link-item">
+                                        <a href="javascript:simplePasword();" class="link-base simple">간편비밀번호</a>
+                                    </div>
+                                    <div class="link-item">
+                                        <a href="javascript:;" class="link-base certify">공인인증</a>
+                                    </div>
+                                    <div class="link-item">
+                                        <a href="javascript:modalUI.run('MO-CM-990200-030000p');" class="link-base kakao">카카오페이</a>
+                                    </div>
+                                    <!-- 2020.07.06 수정 - '휴대폰인증' ↔ '바이오인증' 순서 변경 -->
+                                    <div class="link-item only-mo">
+                                        <a href="javascript:confBio();" class="link-base bio">바이오인증</a>
+                                    </div>
+                                    <div class="link-item">
+                                        <a href="javascript:modalUI.run('MO-CM-990200-040000p');" class="link-base mobile">휴대폰인증</a>
+                                    </div>
+                                </div>
+                                <div class="link-wrap txt-c mgt4">
+                                    <a href="javascript:;" class="link-base sepline">공인인증서등록</a>
+                                    <a href="javascript:;" class="link-base sepline">간편비밀번호등록</a>
+                                    <a href="javascript:;" class="link-base">인증센터</a>
+                                </div>
+                            </div>
+                            
+                            <div class="main-page">
+                                <h3 class="h4">비로그인 서비스</h3>
+                                <!-- 2020.07.06 수정 - 메뉴별 아이콘 적용 -->
+                                <div class="link-wrap type-icon">
+                                    <a href="javascript:;" class="link-base">
+                                        <span class="happycall"></span>
+                                        해피콜<br>
+                                        (완전판매모니터링)
+                                    </a>
+                                    <a href="javascript:;" class="link-base">
+                                        <span class="claim"></span>
+                                        사고보험금<br>
+                                        청구
+                                    </a>
+                                    <a href="javascript:;" class="link-base">
+                                        <span class="complaint"></span>
+                                        민원조회
+                                    </a>
+                                    <!-- 2020.07.14 문구 수정 -->
+                                    <a href="javascript:;" class="link-base">
+                                        <span class="insurelist"></span>
+                                        피보험자<br>
+                                        보장내역조회
+                                    </a>
+                                    <a href="javascript:;" class="link-base">
+                                        <span class="receipt"></span>
+                                        보험금<br>
+                                        접수현황조회
+                                    </a>
+                                    <a href="javascript:;" class="link-base">
+                                        <span class="agency"></span>
+                                        지점안내
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="main-page pd-n">
+                                <div id="loginInfo" class="ui-acco type-useinfo">
+                                    <dl class="ui-acco-wrap">
+                                        <dt class="ui-acco-tit">
+                                            <button type="button" class="ui-acco-btn">
+                                                이용안내
+                                                <span class="ui-acco-arrow">열기</span>
+                                            </button>
+                                        </dt>
+                                        <dd class="ui-acco-pnl">
+                                            <ul class="ul-base">
+                                                <li>
+                                                    <strong>조회 및 고객정보변경</strong><br>
+                                                    24시간 (연중무휴)
+                                                </li>
+                                                <li>
+                                                    <strong>보험료입금 자동이체 신청 및 변경</strong><br>
+                                                    월~금요일 (08:00~21:00)
+                                                </li>
+                                                <li>
+                                                    <strong>보험계약대출</strong><br>
+                                                    365일 (08:00~23:30)<br>
+                                                    <!-- 2020.07.06 문구 수정 - 시간 변경 -->
+                                                    (단, 변액보험 토요일은 13:00~23:30)
+                                                </li>
+                                                <li>
+                                                    <strong>제지급업무(해약, 인출 등)</strong><br>
+                                                    월~토요일 (08:00~22:00)<br>
+                                                    <!-- 2020.07.06 문구 추가 -->
+                                                    (단, 변액보험 토요일은 13:00~22:00)<br>
+                                                    (분할/만기/배당금/휴면보험금 일요일 가능)
+                                                </li>
+                                                <li>
+                                                    <strong>변경</strong><br>
+                                                    월~금요일 (08:00~22:00)<br>
+                                                    (단, 감액 특약해약 우량체변경은 18시까지)
+                                                </li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2020.06.04 추가 - 기업회원 tab 내용 -->
+                        <div class="tab-cont">
+                            <!-- 2020.07.21 디자인 적용에 따른 HTML 수정 -->
+                            <div class="main-page pdt-n">
+                                <!-- 2020.08.14 class값 col3, odd 추가 -->
+                                <div class="link-list type-icon col3 odd">
+                                    <div class="link-item">
+                                        <a href="javascript:modalUI.run('MO-CM-990201-010000p');" class="link-base group01">단체보험 - 법인</a>
+                                    </div>
+                                    <div class="link-item">
+                                        <a href="javascript:modalUI.run('MO-CM-990201-020000p');" class="link-base group02">단체보험 - 피보험자</a>
+                                    </div>
+                                    <div class="link-item">
+                                        <a href="javascript:modalUI.run('MO-CM-990201-030000p');" class="link-base group03">퇴직연금 - 기업</a>
+                                    </div>
+                                </div>
+                                <!-- 2020.08.14 디자인 반영에 따른 div 추가 -->
+                                <div class="login-group-set pdt5">
+                                    <!-- 2020.08.14 class값 pdt5 삭제 -->
+                                    <div class="check-item pdb5">
+                                        <input type="checkbox" id="setBasic">
+                                        <label for="setBasic">기본로그인으로 설정</label>
+                                    </div>
+                                    <div class="link-wrap">
+                                        <a href="javascript:;" class="link-base sepline">공인인증서등록</a>
+                                        <a href="javascript:;" class="link-base sepline">인증센터</a>
+                                        <a href="javascript:;" class="link-base">공인인증서관리</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <aside class="rnb"></aside>
+        </div>
+    </body>
+</html>
